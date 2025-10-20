@@ -9,12 +9,17 @@ datasource db {
     // directUrl = env("DIRECT_URL")
 }
 
+enum ROLE {
+    student
+    admin
+}
+
 model User {
   id         String    @id @default(uuid())
   email      String    @unique
   name       String?
   image      String?
-  role       String    @default("student")
+  role       ROLE      @default(student)
   createdAt  DateTime  @default(now())
   activities Activity[]
 }
