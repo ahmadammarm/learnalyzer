@@ -1,0 +1,45 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  name       String?
+  image      String?
+  role       String    @default("student")
+  createdAt  DateTime  @default(now())
+  activities Activity[]
+}
+
+model Activity {
+  id                 String   @id @default(uuid())
+  userId             String
+  date               DateTime
+  startTime          String?  // or DateTime for timestamp
+  endTime            String?
+  durationMinutes    Int
+  activityType       String
+  subType            String?
+  understandingLevel Int
+  notes              String?
+  createdAt          DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id])
+  preprocessing      PreprocessingResult[]
+}
+
+model PreprocessingResult {
+  id                 String  @id @default(uuid())
+  activityId         String
+  normalizedDuration Float?
+  category           String?
+  createdAt          DateTime @default(now())
+  activity           Activity @relation(fields: [activityId], references: [id])
+}
