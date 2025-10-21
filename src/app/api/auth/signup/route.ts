@@ -12,7 +12,11 @@ export async function POST(request: NextRequest) {
 
         if (!parseResult.success) {
             return NextResponse.json(
-                { success: false, errors: parseResult.error.format() },
+                {
+                    success: false,
+                    message: "Validation failed",
+                    errors: parseResult.error.format()
+                },
                 { status: 400 }
             );
         }
@@ -25,7 +29,10 @@ export async function POST(request: NextRequest) {
 
         if (existingUser) {
             return NextResponse.json(
-                { success: false, error: "User with this email already exists" },
+                {
+                    success: false,
+                    message: "User with this email already exists"
+                },
                 { status: 400 }
             );
         }
@@ -37,6 +44,7 @@ export async function POST(request: NextRequest) {
                 email,
                 name,
                 password: hashedPassword,
+                role: "student",
             },
         });
 
@@ -50,6 +58,12 @@ export async function POST(request: NextRequest) {
         );
 
     } catch (error: any) {
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        return NextResponse.json(
+            {
+                success: false,
+                message: error.message || "Internal server error"
+            },
+            { status: 500 }
+        );
     }
 }
