@@ -41,7 +41,7 @@ export default function SignupForm() {
             return response.json()
         },
         onSuccess: () => {
-            router.push("/sign-in")
+            router.push("/auth/sign-in")
         },
         onError: (error: Error) => {
             // console.error("Registration error:", error);
