@@ -1,9 +1,9 @@
-import ActivityForm from "@/components/mvp/ActivityForm";
+import ActivityTable from "@/components/mvp/ActivityTable";
 
-export default function ActivityFormPage() {
+export default function ActivityTablePage() {
     return (
         <>
-            <ActivityForm />
+            <ActivityTable />
         </>
     )
 }

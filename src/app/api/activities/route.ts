@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
                 endTime: activityData.endTime || "",
                 durationMinutes: calculatedDuration,
                 activityType: activityData.activityType,
-                subType: activityData.subType || null,
+                subType: activityData.subType || "",
                 understandingLevel: activityData.understandingLevel,
-                notes: activityData.notes || null,
+                notes: activityData.notes || "",
             },
         });
 
