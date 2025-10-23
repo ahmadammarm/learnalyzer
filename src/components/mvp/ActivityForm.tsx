@@ -1,27 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm, type SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
-import { type ActivityFormData, ActivitySchema } from "@/schemas/ActivitySchema"
-import { Button } from "../ui/button"
-import { Textarea } from "../ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Input } from "../ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { type ActivityFormData, ActivitySchema } from "@/schemas/ActivitySchema";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Input } from "../ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { toast } from "sonner";
 
 export default function ActivityForm() {
-    const [success, setSuccess] = useState(false)
-    const queryClient = useQueryClient()
+    const activityTypes = ["Belajar", "Olahraga", "Membaca", "Coding", "Meeting", "Lainnya"];
+
+    const now = new Date();
+    const pad = (num: number) => String(num).padStart(2, "0");
+    const startTimeDefault = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const endTimeDefault = `${pad((now.getHours() + 1) % 24)}:${pad(now.getMinutes())}`;
+
+    const defaultValues: ActivityFormData = {
+        date: new Date().toISOString().split("T")[0],
+        activityType: activityTypes[0],
+        subType: "",
+        startTime: startTimeDefault,
+        endTime: endTimeDefault,
+        understandingLevel: 1,
+        notes: "",
+    };
 
     const form = useForm<ActivityFormData>({
         resolver: zodResolver(ActivitySchema),
-    })
-
-    const activityTypes = ["Belajar", "Olahraga", "Membaca", "Coding", "Meeting", "Lainnya"]
+        defaultValues,
+    });
 
     const understandingLevels = [
         { value: 1, label: "1 - Tidak Paham" },
@@ -29,51 +42,42 @@ export default function ActivityForm() {
         { value: 3, label: "3 - Cukup Paham" },
         { value: 4, label: "4 - Paham" },
         { value: 5, label: "5 - Sangat Paham" },
-    ]
+    ];
 
     const submitActivity = async (data: ActivityFormData) => {
-        const submitData: Record<string, any> = { ...data }
+        const cleanData: Record<string, any> = { ...data };
 
-        Object.keys(submitData).forEach((k) => {
-            if (submitData[k] === undefined || submitData[k] === null || submitData[k] === "") {
-                delete submitData[k]
+        Object.keys(cleanData).forEach((key) => {
+            if (cleanData[key] === "" || cleanData[key] === null || cleanData[key] === undefined) {
+                delete cleanData[key];
             }
-        })
+        });
 
         const response = await fetch("/api/activities", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(submitData),
-        })
+            body: JSON.stringify(cleanData),
+        });
 
-        const result = await response.json()
-        if (!response.ok) throw result
-        return result
-    }
+        const result = await response.json();
+        if (!response.ok) throw result;
+        return result;
+    };
 
     const mutation = useMutation({
         mutationFn: submitActivity,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["activities"] })
-            setSuccess(true)
-            form.reset()
-            setTimeout(() => setSuccess(false), 3000)
+            toast.success("Aktivitas berhasil ditambahkan!");
+            form.reset(defaultValues);
         },
         onError: (error: any) => {
-            if (error?.errors) {
-                Object.entries(error.errors).forEach(([field, messages]) => {
-                    form.setError(field as keyof ActivityFormData, {
-                        type: "server",
-                        message: Array.isArray(messages) ? messages.join(", ") : String(messages),
-                    })
-                })
-            }
+            toast.error(error.message || "Terjadi kesalahan saat menyimpan data");
         },
-    })
+    });
 
     const onSubmit: SubmitHandler<ActivityFormData> = (data) => {
-        mutation.mutate(data)
-    }
+        mutation.mutate(data);
+    };
 
     return (
         <div className="min-h-screen py-8 px-4">
@@ -81,26 +85,9 @@ export default function ActivityForm() {
                 <div className="bg-slate-900 rounded-lg shadow-2xl p-6 md:p-8 border border-slate-700">
                     <h1 className="text-3xl font-bold text-white mb-6">Tambah Aktivitas</h1>
 
-                    {success && (
-                        <div className="mb-6 p-4 bg-emerald-950 border border-emerald-700 rounded-lg flex items-center gap-2 text-emerald-300">
-                            <CheckCircle2 className="w-5 h-5" />
-                            <p>Aktivitas berhasil ditambahkan!</p>
-                        </div>
-                    )}
-
-                    {mutation.isError && (
-                        <div className="mb-6 p-4 bg-red-950 border border-red-700 rounded-lg flex items-center gap-2 text-red-300">
-                            <AlertCircle className="w-5 h-5" />
-                            <p>
-                                {(mutation.error as any)?.error ||
-                                    (mutation.error as any)?.message ||
-                                    "Terjadi kesalahan saat menyimpan data"}
-                            </p>
-                        </div>
-                    )}
-
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
                             <FormField
                                 control={form.control}
                                 name="date"
@@ -110,11 +97,7 @@ export default function ActivityForm() {
                                             Tanggal <span className="text-red-400">*</span>
                                         </FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="date"
-                                                className="w-full px-4 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-100 bg-slate-800 placeholder-slate-500"
-                                                {...field}
-                                            />
+                                            <Input type="date" {...field} className="bg-slate-800 text-slate-100 border border-slate-600" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -131,13 +114,13 @@ export default function ActivityForm() {
                                         </FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="w-full bg-slate-800 text-slate-100 border border-slate-600 focus:ring-2 focus:ring-blue-500">
+                                                <SelectTrigger className="bg-slate-800 text-slate-100 border border-slate-600 w-full">
                                                     <SelectValue placeholder="Pilih jenis aktivitas" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="bg-slate-800 border border-slate-600">
                                                 {activityTypes.map((type) => (
-                                                    <SelectItem key={type} value={type} className="text-slate-100 focus:bg-slate-700">
+                                                    <SelectItem key={type} value={type} className="text-slate-100">
                                                         {type}
                                                     </SelectItem>
                                                 ))}
@@ -153,16 +136,12 @@ export default function ActivityForm() {
                                 name="subType"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-slate-200">
-                                            Sub Tipe <span className="text-red-400">*</span>
-                                        </FormLabel>
+                                        <FormLabel className="text-slate-200">Sub Tipe</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="text"
-                                                placeholder="Contoh: JavaScript, Kardio, Novel"
-                                                className="w-full px-4 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-100 bg-slate-800 placeholder-slate-500"
                                                 {...field}
-                                                value={field.value || ""}
+                                                placeholder="Contoh: JavaScript, Kardio, Novel"
+                                                className="bg-slate-800 text-slate-100 border border-slate-600"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -182,15 +161,16 @@ export default function ActivityForm() {
                                             <FormControl>
                                                 <Input
                                                     type="time"
-                                                    className="w-full px-4 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-100 bg-slate-800 placeholder-slate-500"
                                                     {...field}
-                                                    value={field.value || ""}
+                                                    value={field.value || startTimeDefault}
+                                                    className="bg-slate-800 text-slate-100 border border-slate-600"
                                                 />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
                                 <FormField
                                     control={form.control}
                                     name="endTime"
@@ -202,9 +182,9 @@ export default function ActivityForm() {
                                             <FormControl>
                                                 <Input
                                                     type="time"
-                                                    className="w-full px-4 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-100 bg-slate-800 placeholder-slate-500"
                                                     {...field}
-                                                    value={field.value || ""}
+                                                    value={field.value || endTimeDefault}
+                                                    className="bg-slate-800 text-slate-100 border border-slate-600"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -218,25 +198,16 @@ export default function ActivityForm() {
                                 name="understandingLevel"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-slate-200">
-                                            Tingkat Pemahaman (1-5) <span className="text-red-400">*</span>
-                                        </FormLabel>
-                                        <Select
-                                            onValueChange={(value) => field.onChange(Number.parseInt(value))}
-                                            value={field.value?.toString()}
-                                        >
+                                        <FormLabel className="text-slate-200">Tingkat Pemahaman <span className="text-red-400">*</span></FormLabel>
+                                        <Select onValueChange={(v) => field.onChange(Number(v))} value={String(field.value)}>
                                             <FormControl>
-                                                <SelectTrigger className="w-full bg-slate-800 text-slate-100 border border-slate-600 focus:ring-2 focus:ring-blue-500">
+                                                <SelectTrigger className="bg-slate-800 text-slate-100 border border-slate-600 w-full">
                                                     <SelectValue placeholder="Pilih tingkat pemahaman" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="bg-slate-800 border border-slate-600">
                                                 {understandingLevels.map((level) => (
-                                                    <SelectItem
-                                                        key={level.value}
-                                                        value={level.value.toString()}
-                                                        className="text-slate-100 focus:bg-slate-700"
-                                                    >
+                                                    <SelectItem key={level.value} value={String(level.value)} className="text-slate-100">
                                                         {level.label}
                                                     </SelectItem>
                                                 ))}
@@ -252,17 +223,14 @@ export default function ActivityForm() {
                                 name="notes"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-slate-200">
-                                            Catatan <span className="text-red-400">*</span>
-                                        </FormLabel>
+                                        <FormLabel className="text-slate-200">Catatan</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                rows={4}
-                                                placeholder="Tambahkan catatan tentang aktivitas ini... (maks 500 karakter)"
-                                                className="w-full px-4 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-slate-100 bg-slate-800 placeholder-slate-500"
-                                                maxLength={500}
                                                 {...field}
-                                                value={field.value || ""}
+                                                rows={4}
+                                                maxLength={500}
+                                                placeholder="Tambahkan catatan tentang aktivitas ini..."
+                                                className="bg-slate-800 text-slate-100 border border-slate-600 resize-none"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -273,12 +241,11 @@ export default function ActivityForm() {
                             <Button
                                 type="submit"
                                 disabled={mutation.isPending}
-                                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-medium py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white py-3 rounded-lg flex items-center justify-center gap-2"
                             >
                                 {mutation.isPending ? (
                                     <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Menyimpan...
+                                        <Loader2 className="w-5 h-5 animate-spin" /> Menyimpan...
                                     </>
                                 ) : (
                                     "Simpan Aktivitas"
@@ -289,5 +256,5 @@ export default function ActivityForm() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
