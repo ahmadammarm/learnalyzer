@@ -29,8 +29,8 @@ model Activity {
     id                 String                @id @default(uuid())
     userId             String
     date               DateTime
-    startTime          String? // or DateTime for timestamp
-    endTime            String?
+    startTime          String
+    endTime            String
     durationMinutes    Int
     activityType       String
     subType            String?

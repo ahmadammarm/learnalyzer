@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function SignupForm() {
 
@@ -41,11 +42,12 @@ export default function SignupForm() {
             return response.json()
         },
         onSuccess: () => {
+            toast.success("Registration successful! Please sign in.")
             router.push("/auth/sign-in")
         },
         onError: (error: Error) => {
             // console.error("Registration error:", error);
-            alert(error.message)
+            toast.error(error.message)
         },
     })
 
