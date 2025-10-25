@@ -64,7 +64,7 @@ export default function Navbar() {
 
 						{/* Desktop Buttons */}
 						<div className="hidden md:flex items-center gap-4">
-							<Link href="#">
+							<Link href="/auth/sign-in">
 								<Button
 									variant="default"
 									// className="bg-transparent text-gray-100 hover:text-gray-100 hover:bg-gray-800 px-6 text-sm font-medium rounded-full"
@@ -75,7 +75,7 @@ export default function Navbar() {
 									Sign in
 								</Button>
 							</Link>
-							<Link href="#">
+							<Link href="/auth/sign-up">
 								{/* <Button className="bg-white hover:bg-gray-200 text-black rounded-full px-6 text-sm font-medium"
 								> */}
 								<Button
@@ -110,7 +110,7 @@ export default function Navbar() {
 								Blog
 							</a>
 							<div className="flex gap-2 px-4 pt-2">
-								<Link href="#">
+								<Link href="/auth/sign-in">
 									<Button
 										variant="ghost"
 										className="flex-1 text-gray-700 hover:border-2 hover:border-gray-300 hover:bg-transparent text-sm rounded-full"
@@ -118,7 +118,7 @@ export default function Navbar() {
 										Sign in
 									</Button>
 								</Link>
-								<Link href="#">
+								<Link href="/auth/sign-up">
 									<Button className="flex-1 bg-black hover:bg-gray-900 text-white rounded-full text-sm">
 										Try Free
 									</Button>
