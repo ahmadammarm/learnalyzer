@@ -41,10 +41,11 @@ const QUERY_KEYS = {
 };
 
 const UNDERSTANDING_LEVELS = {
-    high: { min: 80, className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
-    medium: { min: 60, className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-    low: { min: 40, className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
-    veryLow: { min: 0, className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
+    pahamSekali: { min: 5, className: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200" },
+    paham: { min: 4, className: "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200" },
+    cukupPaham: { min: 3, className: "bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-200" },
+    kurangPaham: { min: 2, className: "bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-200" },
+    tidakPaham: { min: 1, className: "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200" },
 };
 
 const fetchActivities = async (): Promise<ActivitiesResponse> => {
@@ -58,10 +59,10 @@ const fetchActivities = async (): Promise<ActivitiesResponse> => {
 };
 
 const getUnderstandingColor = (level: number): string => {
-    if (level >= UNDERSTANDING_LEVELS.high.min) return UNDERSTANDING_LEVELS.high.className;
-    if (level >= UNDERSTANDING_LEVELS.medium.min) return UNDERSTANDING_LEVELS.medium.className;
-    if (level >= UNDERSTANDING_LEVELS.low.min) return UNDERSTANDING_LEVELS.low.className;
-    return UNDERSTANDING_LEVELS.veryLow.className;
+    if (level >= UNDERSTANDING_LEVELS.pahamSekali.min) return UNDERSTANDING_LEVELS.pahamSekali.className;
+    if (level >= UNDERSTANDING_LEVELS.paham.min) return UNDERSTANDING_LEVELS.paham.className;
+    if (level >= UNDERSTANDING_LEVELS.cukupPaham.min) return UNDERSTANDING_LEVELS.cukupPaham.className;
+    return UNDERSTANDING_LEVELS.kurangPaham.className;
 };
 
 const formatDate = (dateString: string): string => {
@@ -173,7 +174,11 @@ function ActivityRow({ activity }: ActivityRowProps) {
             <TableCell className="text-sm">{activity.durationMinutes} menit</TableCell>
             <TableCell>
                 <Badge className={getUnderstandingColor(activity.understandingLevel)}>
-                    {activity.understandingLevel}%
+                    {activity.understandingLevel === 1 && "Tidak paham"}
+                    {activity.understandingLevel === 2 && "Kurang paham"}
+                    {activity.understandingLevel === 3 && "Cukup paham"}
+                    {activity.understandingLevel === 4 && "Paham"}
+                    {activity.understandingLevel === 5 && "Paham sekali"}
                 </Badge>
             </TableCell>
             <TableCell className="max-w-xs truncate text-sm text-muted-foreground">

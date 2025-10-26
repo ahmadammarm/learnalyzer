@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
             {
                 totalHours: Math.round((totalHours._sum.durationMinutes || 0) / 60),
                 totalHoursInAWeek: Math.round(hoursThisWeek),
-                averageUnderstanding: averageUnderstanding._avg.understandingLevel || 0,
+                averageUnderstanding: (averageUnderstanding._avg.understandingLevel).toFixed(2) || 0,
                 mostCommonActivity:
                     mostCommonActivity.sort((a, b) => b._count.activityType - a._count.activityType)[0]
                         ?.activityType || null,

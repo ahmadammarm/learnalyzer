@@ -294,39 +294,44 @@ export default function ActivityForm() {
 						)}
 					/>
 
-					{/* Understanding Level with Slider */}
-					<FormField
-						control={form.control}
-						name="understandingLevel"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel className="flex items-center gap-2 text-gray-200 mb-4">
-									<Lightbulb className="w-4 h-4 text-purple-400" />
-									Understanding Level <span className="text-red-400">*</span>
-								</FormLabel>
-								<FormControl>
-									<div className="space-y-4">
-										<Slider
-											min={1}
-											max={5}
-											step={1}
-											value={[field.value]}
-											onValueChange={(vals) => field.onChange(vals[0])}
-											className="w-full"
-										/>
-										<div className="flex justify-between items-center">
-											<span className="text-xs text-gray-400">Poor</span>
-											<div className={`px-4 py-2 rounded-lg ${getLevelColor(currentLevel)}`}>
-												<span className="text-base font-semibold">Level {currentLevel}</span>
-											</div>
-											<span className="text-xs text-gray-400">Excellent</span>
-										</div>
-									</div>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+                    <FormField
+                        control={form.control}
+                        name="understandingLevel"
+                        render={({ field }) => {
+                            const levelLabels = ["Tidak paham", "Kurang paham", "Cukup paham", "Paham", "Paham sekali"];
+                            const idx = Math.max(0, Math.min(4, (currentLevel ?? field.value ?? 3) - 1));
+                            const label = levelLabels[idx];
+
+                            return (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-2 text-gray-200 mb-4">
+                                        <Lightbulb className="w-4 h-4 text-purple-400" />
+                                        Understanding Level <span className="text-red-400">*</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <div className="space-y-4">
+                                            <Slider
+                                                min={1}
+                                                max={5}
+                                                step={1}
+                                                value={[field.value ?? 3]}
+                                                onValueChange={(vals) => field.onChange(vals[0])}
+                                                className="w-full"
+                                            />
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-gray-400">Tidak paham</span>
+                                                <div className={`px-4 py-2 rounded-lg ${getLevelColor(currentLevel ?? field.value ?? 3)}`}>
+                                                    <span className="text-base font-semibold">{label}</span>
+                                                </div>
+                                                <span className="text-xs text-gray-400">Paham sekali</span>
+                                            </div>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            );
+                        }}
+                    />
 
 					{/* Notes */}
 					<FormField
