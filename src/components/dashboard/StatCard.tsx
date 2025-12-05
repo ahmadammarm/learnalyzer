@@ -2,7 +2,7 @@ import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
 	title: string;
-	value: string;
+	value: number;
 	subValue: string;
 	change: string;
 	trend: "up" | "down";
