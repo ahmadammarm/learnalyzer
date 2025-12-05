@@ -1,94 +1,68 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export async function GET(request: NextRequest) {
-    const session = await auth();
-    const user = session?.user;
-
-    if (!user) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
+export async function GET() {
     try {
-        const totalHours = await prisma.activity.aggregate({
-            where: { userId: user.id },
-            _sum: { durationMinutes: true },
+        // 1. Rata-rata fatigue per course
+        const avgFatiguePerCourse = await prisma.learningFatigueMetric.groupBy({
+            by: ["course_id"],
+            _avg: { stress_level: true },
         });
 
-        const now = new Date();
-        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+        // 2. Trend fatigue mingguan (7 hari terakhir)
+        const weeklyTrend = await prisma.$queryRaw`
+      SELECT
+        DATE(sessionDate) as date,
+        AVG(fatigueLevel) as avgFatigue
+      FROM "StudentLearningFatigue"
+      WHERE sessionDate >= NOW() - INTERVAL '7 days'
+      GROUP BY DATE(sessionDate)
+      ORDER BY date ASC;
+    `;
 
-        const totalHoursThisWeek = await prisma.activity.aggregate({
-            where: {
-                userId: user.id,
-                createdAt: { gte: oneWeekAgo },
+        // 3. Distribusi cognitive load
+        const cognitiveLoadDistribution = await prisma.learningFatigueMetric.groupBy({
+            by: ["perceived_cognitive_load"],
+            _count: { perceived_cognitive_load: true }
+        });
+
+        // 4. Course dengan attention terendah
+        const lowAttentionCourses = await prisma.learningFatigueMetric.groupBy({
+            by: ["course_id"],
+            _avg: { quiz_score: true },
+            orderBy: {
+                _avg: { quiz_score: "asc" }
             },
-            _sum: { durationMinutes: true },
+            take: 5
         });
 
-        const totalHoursLastWeek = await prisma.activity.aggregate({
-            where: {
-                userId: user.id,
-                createdAt: { gte: twoWeeksAgo, lt: oneWeekAgo },
-            },
-            _sum: { durationMinutes: true },
+        // 5. Korelasi durasi vs fatigue (kasar)
+        const correlationData = await prisma.$queryRaw`
+      SELECT sessionDuration, fatigueLevel
+      FROM "StudentLearningFatigue"
+      ORDER BY sessionDate DESC
+      LIMIT 300;
+    `;
+
+        // 6. Deteksi anomali fatigue (fatigue >= 9)
+        const anomalies = await prisma.learningFatigueMetric.findMany({
+            where: { stress_level: { gte: 9 } },
+            orderBy: { created_at: "desc" },
+            take: 20,
         });
 
-        const averageUnderstanding = await prisma.activity.aggregate({
-            where: { userId: user.id },
-            _avg: { understandingLevel: true },
+        return NextResponse.json({
+            avgFatiguePerCourse,
+            weeklyTrend,
+            cognitiveLoadDistribution,
+            lowAttentionCourses,
+            correlationData,
+            anomalies,
         });
-
-        const averageUnderstandingThisWeek = await prisma.activity.aggregate({
-            where: {
-                userId: user.id,
-                createdAt: { gte: oneWeekAgo },
-            },
-            _avg: { understandingLevel: true },
-        });
-
-        const averageUnderstandingLastWeek = await prisma.activity.aggregate({
-            where: {
-                userId: user.id,
-                createdAt: { gte: twoWeeksAgo, lt: oneWeekAgo },
-            },
-            _avg: { understandingLevel: true },
-        });
-
-        const mostCommonActivity = await prisma.activity.groupBy({
-            by: ["activityType"],
-            where: { userId: user.id },
-            _count: { activityType: true },
-        });
-
-        const hoursThisWeek = (totalHoursThisWeek._sum.durationMinutes || 0) / 60;
-        const hoursLastWeek = (totalHoursLastWeek._sum.durationMinutes || 0) / 60;
-        const weeklyChangeHours = hoursThisWeek - hoursLastWeek;
-
-        const understandingThisWeek = averageUnderstandingThisWeek._avg.understandingLevel || 0;
-        const understandingLastWeek = averageUnderstandingLastWeek._avg.understandingLevel || 0;
-        const weeklyChangeUnderstanding = understandingThisWeek - understandingLastWeek;
-
+    } catch (error) {
+        console.error("[DASHBOARD_ERROR]", error);
         return NextResponse.json(
-            {
-                totalHours: Math.round((totalHours._sum.durationMinutes || 0) / 60),
-                totalHoursInAWeek: Math.round(hoursThisWeek),
-                averageUnderstanding: (averageUnderstanding._avg.understandingLevel || 0).toFixed(2),
-                mostCommonActivity:
-                    mostCommonActivity.sort((a, b) => b._count.activityType - a._count.activityType)[0]
-                        ?.activityType || null,
-                weeklyChangeHours: Math.round(weeklyChangeHours),
-                weeklyChangeUnderstanding: Math.round(weeklyChangeUnderstanding),
-            },
-            { status: 200 }
-        );
-    } catch (error: any) {
-        return NextResponse.json(
-            { message: error.message || "Internal server error", status: 500 },
+            { error: "Failed to load dashboard data" },
             { status: 500 }
         );
     }
