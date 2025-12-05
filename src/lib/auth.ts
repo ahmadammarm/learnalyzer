@@ -6,7 +6,7 @@ import { Adapter } from "next-auth/adapters";
 import { compare } from "bcryptjs";
 import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import prisma from "./prisma";
+import {prisma} from "./prisma";
 import { SigninSchema } from "@/schemas/SigninSchema";
 
 
