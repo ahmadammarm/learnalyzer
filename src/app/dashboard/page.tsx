@@ -27,9 +27,9 @@ export default function FatigueDashboardPage() {
     const { data: session } = useSession();
 
     const fatigueQuery = useQuery({
-        queryKey: ["fatigue-dashboard"],
+        queryKey: ["statistics"],
         queryFn: async () => {
-            const response = await fetch("/api/fatigue-dashboard");
+            const response = await fetch("/api/statistics");
             if (!response.ok) {
                 throw new Error("Failed to fetch fatigue data");
             }

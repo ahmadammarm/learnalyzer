@@ -1,51 +1,49 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = "../node_modules/.prisma/client"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-    provider = "postgresql"
-    // url      = env("DATABASE_URL")
-    // directUrl = env("DIRECT_URL")
-}
-
-enum ROLE {
-    student
-    admin
+  provider = "postgresql"
 }
 
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    name      String?
-    image     String?
-    password  String
-    role      ROLE     @default(student)
-    createdAt DateTime @default(now())
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  password  String
+  role      ROLE     @default(student)
+  createdAt DateTime @default(now())
 }
 
 model LearningFatigueMetric {
-    id                            Int       @id @default(autoincrement())
-    student_id                    String?
-    course_id                     String?
-    module_id                     String?
-    date                          DateTime? @db.Date
-    start_time                    String?
-    duration_minutes              Int?
-    instruction_method            String?
-    perceived_cognitive_load      Int?
-    task_difficulty_rating        Int?
-    comprehension_confidence      Int?
-    quiz_score                    Int?
-    time_to_complete_quiz_seconds Float?
-    num_attempts_quiz             Int?
-    num_pauses                    Int?
-    distraction_events            Int?
-    sleep_hours_prev_night        Float?
-    stress_level                  Int?
-    mood_before                   String?
-    mood_after                    String?
-    opened_feedback               Boolean?
-    time_to_open_feedback_hours   Float?
-    created_at                    DateTime  @default(now())
+  id                            Int       @id @default(autoincrement())
+  date                          DateTime? @db.Date
+  comprehension_confidence      Int?
+  course_id                     String?
+  created_at                    DateTime  @default(now())
+  distraction_events            Int?
+  duration_minutes              Int?
+  instruction_method            String?
+  module_id                     String?
+  mood_after                    String?
+  mood_before                   String?
+  num_attempts_quiz             Int?
+  num_pauses                    Int?
+  opened_feedback               Boolean?
+  perceived_cognitive_load      Int?
+  quiz_score                    Int?
+  sleep_hours_prev_night        Float?
+  start_time                    DateTime? @db.Time(6)
+  stress_level                  Int?
+  student_id                    String?
+  task_difficulty_rating        Int?
+  time_to_complete_quiz_seconds Int?
+  time_to_open_feedback_hours   Float?
+}
+
+enum ROLE {
+  student
+  admin
 }

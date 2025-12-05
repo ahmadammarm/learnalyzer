@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import prisma from "@/lib/prisma";
+import {prisma} from "@/lib/prisma";
 import { SignupSchema } from "@/schemas/SignupSchema";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
