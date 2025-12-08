@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -62,7 +63,7 @@ export function HoursSpent() {
 	const additionalHours = Math.floor(totalMinutes / 60);
 	const finalHours = totalHours + additionalHours;
 
-	const maxValue = Math.max(...data.map((item) => item.hours + item.minutes / 60));
+	// const maxValue = Math.max(...data.map((item) => item.hours + item.minutes / 60));
 
 	const CustomTooltip = ({ active, payload }: any) => {
 		if (active && payload && payload.length) {

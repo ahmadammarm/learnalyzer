@@ -17,15 +17,11 @@ import {
 	YAxis,
 	CartesianGrid,
 	Tooltip,
-	Legend,
 	ResponsiveContainer,
-	PieChart,
-	Pie,
-	Cell,
 	ScatterChart,
 	Scatter,
 } from "recharts";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
+import { Key } from "react";
 
 const formatDate = (date: string | number | Date) => {
 	const d = new Date(date);
@@ -76,26 +72,26 @@ export default function FatigueDashboardPage() {
 		prev._count.perceived_cognitive_load > current._count.perceived_cognitive_load ? prev : current
 	);
 
-	const weeklyTrendData =
-		data?.anomalies?.length > 0
-			? (() => {
-					const weekMap = new Map();
-					data.anomalies.forEach((item: any) => {
-						const week = formatDate(item.date).short;
-						if (!weekMap.has(week)) {
-							weekMap.set(week, { total: 0, count: 0 });
-						}
-						weekMap.get(week).total += item.stress_level;
-						weekMap.get(week).count += 1;
-					});
-					return Array.from(weekMap.entries())
-						.map(([week, data]: [string, any]) => ({
-							date: week,
-							fatigue: (data.total / data.count).toFixed(1),
-						}))
-						.slice(0, 7);
-			  })()
-			: [];
+	// const weeklyTrendData =
+	// 	data?.anomalies?.length > 0
+	// 		? (() => {
+	// 				const weekMap = new Map();
+	// 				data.anomalies.forEach((item: any) => {
+	// 					const week = formatDate(item.date).short;
+	// 					if (!weekMap.has(week)) {
+	// 						weekMap.set(week, { total: 0, count: 0 });
+	// 					}
+	// 					weekMap.get(week).total += item.stress_level;
+	// 					weekMap.get(week).count += 1;
+	// 				});
+	// 				return Array.from(weekMap.entries())
+	// 					.map(([week, data]: [string, any]) => ({
+	// 						date: week,
+	// 						fatigue: (data.total / data.count).toFixed(1),
+	// 					}))
+	// 					.slice(0, 7);
+	// 		  })()
+	// 		: [];
 
 	const cognitiveLoadData =
 		data?.cognitiveLoadDistribution
@@ -144,19 +140,6 @@ export default function FatigueDashboardPage() {
 			  })()
 			: [];
 
-	const COLORS = [
-		"#8b5cf6",
-		"#ec4899",
-		"#f59e0b",
-		"#10b981",
-		"#3b82f6",
-		"#ef4444",
-		"#14b8a6",
-		"#f97316",
-		"#84cc16",
-		"#a855f7",
-	];
-
 	return (
 		<div className="space-y-6">
 			{/* Welcome Section */}
@@ -175,7 +158,7 @@ export default function FatigueDashboardPage() {
 					)}
 					<p className="text-sm text-gray-500">{formatDate(new Date()).long}</p>
 				</div>
-				<Link href="/dashboard/learning-fatugue-data">
+				<Link href="/dashboard/learning-fatigue-data">
 					<Button className="bg-white hover:bg-purple-100 text-black rounded-full px-6">Go to Data Table</Button>
 				</Link>
 			</div>

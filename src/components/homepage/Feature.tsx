@@ -1,4 +1,4 @@
-import { BarChart3, Zap, Target, TrendingUp, Brain, BookOpen } from "lucide-react";
+import { BarChart3, Target, Brain } from "lucide-react";
 import CardSwap, { Card } from "../animation/CardSwap";
 
 const features = [
