@@ -11,12 +11,12 @@ import Link from "next/link";
 import { useState } from "react";
 import LearningDetails from "@/components/mvp/LearningDetails";
 
-export const QUERY_KEYS = {
+const QUERY_KEYS = {
 	learnings: ["learnings"] as const,
 	learningsTable: (page: number, limit: number) => ["learnings-table", page, limit] as const,
 };
 
-export interface LearningFatigueData {
+interface LearningFatigueData {
 	id: number;
 	date: string;
 	student_id: string;
@@ -42,19 +42,19 @@ export interface LearningFatigueData {
 	created_at: string;
 }
 
-export interface PaginationInfo {
+interface PaginationInfo {
 	page: number;
 	limit: number;
 	total: number;
 	totalPages: number;
 }
 
-export interface TableResponse {
+interface TableResponse {
 	data: LearningFatigueData[];
 	pagination: PaginationInfo;
 }
 
-export async function fetchDataTable(page: number = 1, limit: number = 10): Promise<TableResponse> {
+async function fetchDataTable(page: number = 1, limit: number = 10): Promise<TableResponse> {
 	const response = await fetch(`/api/table?page=${page}&limit=${limit}`, {
 		credentials: "include",
 	});

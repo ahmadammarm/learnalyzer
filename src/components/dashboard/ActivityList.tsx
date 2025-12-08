@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Clock, MoreVertical } from "lucide-react";
 import { Button } from "../ui/button";
-import { format, addDays, subDays, startOfWeek, addWeeks, subWeeks } from "date-fns";
+import { format, addDays, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface Activity {

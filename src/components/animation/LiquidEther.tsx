@@ -548,6 +548,7 @@ export default function LiquidEther({
 				this.props = props || {};
 				this.uniforms = this.props.material?.uniforms;
 			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			init(..._args: any[]) {
 				this.scene = new THREE.Scene();
 				this.camera = new THREE.Camera();
@@ -558,6 +559,7 @@ export default function LiquidEther({
 					this.scene.add(this.plane);
 				}
 			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			update(..._args: any[]) {
 				if (!Common.renderer || !this.scene || !this.camera) return;
 				Common.renderer.setRenderTarget(this.props.output || null);

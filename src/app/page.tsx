@@ -1,7 +1,6 @@
 "use client";
 
 import LiquidEther from "@/components/animation/LiquidEther";
-import TargetCursor from "@/components/animation/TargetCursor";
 import Features from "@/components/homepage/Feature";
 import Footer from "@/components/homepage/Footer";
 import Hero from "@/components/homepage/Hero";

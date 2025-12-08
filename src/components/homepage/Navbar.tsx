@@ -20,7 +20,7 @@ export default function Navbar() {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-	const textColor = isDarkBackground ? "text-white" : "text-black";
+	// const textColor = isDarkBackground ? "text-white" : "text-black";
 	const textColorSecondary = isDarkBackground ? "text-gray-100" : "text-gray-700";
 	const hoverColor = isDarkBackground ? "hover:text-purple-300" : "hover:text-purple-600";
 

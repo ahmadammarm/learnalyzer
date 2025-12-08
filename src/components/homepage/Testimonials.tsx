@@ -44,7 +44,7 @@ export default function Testimonials() {
 							className="bg-background border-4 border-primary/20 hover:border-primary/40 transition-colors rounded-2xl cursor-target"
 						>
 							<CardContent className="pt-6 space-y-4">
-								<p className="text-foreground/80 leading-relaxed italic">"{testimonial.quote}"</p>
+								<p className="text-foreground/80 leading-relaxed italic">&quot;{testimonial.quote}&quot;</p>
 								<div className="flex items-center gap-3 pt-4 border-t border-primary/10">
 									<div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-sm font-semibold text-primary-foreground">
 										{testimonial.avatar}
