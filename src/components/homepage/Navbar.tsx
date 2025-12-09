@@ -83,7 +83,7 @@ export default function Navbar() {
 										isDarkBackground ? "bg-white hover:bg-gray-200 text-black" : "bg-black hover:bg-gray-800 text-white"
 									} rounded-full px-6 text-sm font-medium transition-colors cursor-target`}
 								>
-									Try Free
+									Sign up
 								</Button>
 							</Link>
 						</div>
@@ -120,7 +120,7 @@ export default function Navbar() {
 								</Link>
 								<Link href="/auth/sign-up">
 									<Button className="flex-1 bg-black hover:bg-gray-900 text-white rounded-full text-sm">
-										Try Free
+										Sign up
 									</Button>
 								</Link>
 							</div>
