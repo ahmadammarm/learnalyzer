@@ -7,7 +7,7 @@ const testimonials = [
 		name: "Ardha Tavada",
 		role: "Computer Science Student",
 		quote:
-			"StudyTrack completely transformed how I approach learning. The insights helped me identify my peak study hours and optimize my schedule accordingly.",
+			"Learnalyzer completely transformed how I approach learning. The insights helped me identify my peak study hours and optimize my schedule accordingly.",
 		avatar: "AT",
 	},
 	{
@@ -21,8 +21,14 @@ const testimonials = [
 		name: "Adil Zakaria",
 		role: "Computer Science Student",
 		quote:
-			"I've improved my grades by 15% since using StudyTrack. The AI recommendations are spot-on and have helped me study smarter, not harder.",
+			"I've improved my grades by 15% since using Learnalyzer. The AI recommendations are spot-on and have helped me study smarter, not harder.",
 		avatar: "AZ",
+	},
+	{
+		name: "Adinda Salsa Leviona",
+		role: "Computer Science Student",
+		quote: "The focus mode feature is a game-changer. It minimizes distractions and keeps me on track during my study sessions.",
+		avatar: "AS",
 	},
 ];
 
@@ -37,7 +43,7 @@ export default function Testimonials() {
 					</p>
 				</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 mb-8">
 					{testimonials.map((testimonial, index) => (
 						<Card
 							key={index}
